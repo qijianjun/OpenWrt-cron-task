@@ -1,0 +1,20 @@
+# 文件格式说明
+#  ——分钟 (0 - 59)
+# |  ——小时 (0 - 23)
+# | |  ——日   (1 - 31)
+# | | |  ——月   (1 - 12)
+# | | | |  ——星期 (0 - 7)（星期日=0或7）
+# | | | | |
+# * * * * * 被执行的命令
+*/11 * * * * /root/kcptun_watchdog.sh >> /var/log/watchdog.log 2>&1
+*/10 * * * * /root/ss_watchdog.sh >> /var/log/watchdog.log 2>&1
+0 1 * * 7 echo "" > /var/log/watchdog.log
+30 4 * * * /root/update_ignore_list.sh > /dev/null 2>&1
+30 5 * * * wget https://raw.githubusercontent.com/gentlyx/anti-AD/master/adblock-for-dnsmasq.conf -O /etc/dnsmasq.d/adblock-for-dnsmasq.conf
+31 5 * * * wget https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/accelerated-domains.china.conf -O /etc/dnsmasq.d/accelerated-domains.china.conf
+32 5 * * * wget https://cokebar.github.io/gfwlist2dnsmasq/dnsmasq_gfwlist.conf -O /etc/dnsmasq.d/dnsmasq_gfwlist.conf && sed -i 's/#5353/#5311/g' /etc/dnsmasq.d/dnsmasq_gfwlist.conf
+33 5 * * * /etc/init.d/dnsmasq reload
+00 * * * * /root/bakup_log.sh
+00 4 * * * opkg list-upgradable | cut -f 1 -d ' ' | xargs opkg upgrade
+00 */4 * * * /root/cping.sh
+00 23 * * * /root/sping.sh
